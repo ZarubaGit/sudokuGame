@@ -1,0 +1,15 @@
+<resources>
+    <dimen name="sudoku_board_padding">8dp</dimen>
+    <dimen name="sudoku_board_outer_stroke">8dp</dimen>
+    <dimen name="sudoku_board_block_stroke">5dp</dimen>
+    <dimen name="sudoku_board_cell_stroke">2dp</dimen>
+    <dimen name="sudoku_cell_font">20sp</dimen>
+    <dimen name="number_pad_font">28sp</dimen>
+    <dimen name="number_pad_padding">8dp</dimen>
+    <dimen name="button_corner_radius">12dp</dimen>
+    <dimen name="button_padding_h">12dp</dimen>
+    <dimen name="button_padding_v">2dp</dimen>
+    <dimen name="button_margin">4dp</dimen>
+    <dimen name="status_text_size">16sp</dimen>
+    <dimen name="instruction_text_size">14sp</dimen>
+</resources> 

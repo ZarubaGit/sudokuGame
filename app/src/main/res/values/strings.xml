@@ -1,3 +1,30 @@
 <resources>
-    <string name="app_name">sudokuGame</string>
+    <string name="app_name">SudokuGame</string>
+    <string name="sudoku_title">Судоку</string>
+    <string name="easy">Легкий</string>
+    <string name="medium">Средний</string>
+    <string name="hard">Сложный</string>
+    <string name="new_game">Новая игра</string>
+    <string name="start">Старт</string>
+    <string name="reset">Сброс</string>
+    <string name="hint">Подсказка</string>
+    <string name="check">Проверить</string>
+    <string name="undo">Отмена хода</string>
+    <string name="hints_left">%1$d подсказок</string>
+    <string name="select_cell_instruction">Выберите клетку и введите число от 1 до 9</string>
+    <string name="use_hints_instruction">Используйте подсказки, если застряли</string>
+    <string name="check_instruction">Нажмите \"Проверить\" для валидации решения</string>
+    <string name="win_message">Поздравляем! Судоку решено верно.</string>
+    <string name="error_message">Есть ошибки! Исправьте выделенные клетки.</string>
+    <string name="already_in_cell">Это число уже стоит в выбранной клетке!</string>
+    <string name="timer">Таймер</string>
+    <string name="hints">подсказок</string>
+    <string name="confirm">ОК</string>
+    <string name="cancel">Отмена</string>
+    <string name="reset_confirm_title">Сбросить игру?</string>
+    <string name="reset_confirm_text">Вы уверены, что хотите сбросить поле? Прогресс будет утерян.</string>
+    <string name="yes">Да</string>
+    <string name="no">Нет</string>
+    <string name="victory">Победа!</string>
+    <string name="difficulty">Сложность</string>
 </resources>

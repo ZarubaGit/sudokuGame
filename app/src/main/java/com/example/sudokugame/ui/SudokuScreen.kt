@@ -2,8 +2,6 @@ package com.example.sudokugame.ui
 
 import androidx.compose.foundation.background
 import androidx.compose.foundation.layout.*
-import androidx.compose.foundation.verticalScroll
-import androidx.compose.foundation.rememberScrollState
 import androidx.compose.material.icons.Icons
 import androidx.compose.material.icons.filled.Lightbulb
 import androidx.compose.material.icons.filled.Refresh
@@ -28,13 +26,16 @@ import androidx.compose.ui.platform.LocalContext
 import androidx.compose.runtime.LaunchedEffect
 import androidx.compose.runtime.rememberCoroutineScope
 import kotlinx.coroutines.launch
-import com.example.sudokugame.model.SudokuBoard
 import androidx.compose.foundation.layout.BoxWithConstraints
 import androidx.compose.foundation.layout.WindowInsets
 import androidx.compose.foundation.layout.statusBars
 import androidx.compose.foundation.layout.windowInsetsPadding
 import androidx.compose.ui.graphics.graphicsLayer
 import androidx.compose.animation.core.animateFloatAsState
+import androidx.compose.ui.res.stringResource
+import androidx.compose.ui.res.dimensionResource
+import com.example.sudokugame.R
+import com.example.sudokugame.model.SudokuBoard
 
 @Composable
 fun SudokuScreen(viewModel: SudokuViewModel = viewModel()) {
@@ -51,8 +52,6 @@ fun SudokuScreen(viewModel: SudokuViewModel = viewModel()) {
     var selectedDifficulty by remember { mutableStateOf(Difficulty.MEDIUM) }
     var showWinDialog by remember { mutableStateOf(false) }
     var showResetDialog by remember { mutableStateOf(false) }
-
-    val scrollState = rememberScrollState()
 
     LaunchedEffect(isGameOver) {
         if (isGameOver) showWinDialog = true
@@ -72,20 +71,24 @@ fun SudokuScreen(viewModel: SudokuViewModel = viewModel()) {
         ) {
             // TopBar
             Text(
-                text = "Судоку",
-                fontSize = 32.sp,
+                text = stringResource(R.string.sudoku_title),
+                fontSize = dimensionResource(R.dimen.sudoku_cell_font).value.sp,
                 fontWeight = FontWeight.Bold,
-                modifier = Modifier.padding(top = 16.dp, bottom = 8.dp)
+                modifier = Modifier
+                    .padding(top = 16.dp, bottom = 8.dp)
             )
             Row(verticalAlignment = Alignment.CenterVertically) {
                 Icon(Icons.Default.Timer, contentDescription = null, tint = Color.Red)
                 Text(time.formatAsTime(), modifier = Modifier.padding(start = 4.dp, end = 16.dp))
                 Icon(Icons.Default.Lightbulb, contentDescription = null, tint = Color(0xFFFFD600))
-                Text("$hintsRemaining подсказок", modifier = Modifier.padding(start = 4.dp, end = 16.dp))
+                Text(stringResource(R.string.hints_left, hintsRemaining), modifier = Modifier.padding(start = 4.dp, end = 16.dp))
                 AnimatedButton(
                     onClick = { showDifficultyDialog = true },
                     colors = ButtonDefaults.buttonColors(containerColor = Color(0xFF90CAF9)),
-                    contentPadding = PaddingValues(horizontal = 12.dp, vertical = 2.dp)
+                    contentPadding = PaddingValues(
+                        horizontal = dimensionResource(R.dimen.button_padding_h),
+                        vertical = dimensionResource(R.dimen.button_padding_v)
+                    )
                 ) {
                     Text(selectedDifficulty.name, fontSize = 14.sp)
                 }
@@ -104,9 +107,15 @@ fun SudokuScreen(viewModel: SudokuViewModel = viewModel()) {
                         colors = ButtonDefaults.buttonColors(
                             containerColor = if (diff == selectedDifficulty) Color(0xFF90CAF9) else Color.LightGray
                         ),
-                        modifier = Modifier.padding(horizontal = 4.dp)
+                        modifier = Modifier.padding(horizontal = dimensionResource(R.dimen.button_margin))
                     ) {
-                        Text(diff.name)
+                        Text(stringResource(
+                            when (diff) {
+                                Difficulty.EASY -> R.string.easy
+                                Difficulty.MEDIUM -> R.string.medium
+                                Difficulty.HARD -> R.string.hard
+                            }
+                        ))
                     }
                 }
             }
@@ -118,30 +127,30 @@ fun SudokuScreen(viewModel: SudokuViewModel = viewModel()) {
                 AnimatedButton(
                     onClick = { viewModel.startNewGame(selectedDifficulty) },
                     colors = ButtonDefaults.buttonColors(containerColor = Color(0xFFB39DDB)),
-                    modifier = Modifier.padding(horizontal = 4.dp)
+                    modifier = Modifier.padding(horizontal = dimensionResource(R.dimen.button_margin))
                 ) {
                     Icon(Icons.Default.RestartAlt, contentDescription = null)
-                    Text(" Новая игра")
+                    Text(" "+stringResource(R.string.new_game))
                 }
                 AnimatedButton(
                     onClick = { viewModel.startTimer() },
                     colors = ButtonDefaults.buttonColors(containerColor = Color(0xFF4CAF50)),
-                    modifier = Modifier.padding(horizontal = 4.dp)
+                    modifier = Modifier.padding(horizontal = dimensionResource(R.dimen.button_margin))
                 ) {
-                    Text("Старт")
+                    Text(stringResource(R.string.start))
                 }
                 AnimatedButton(
                     onClick = { viewModel.resetBoard() },
                     colors = ButtonDefaults.buttonColors(containerColor = Color.Gray),
-                    modifier = Modifier.padding(horizontal = 4.dp)
+                    modifier = Modifier.padding(horizontal = dimensionResource(R.dimen.button_margin))
                 ) {
                     Icon(Icons.Default.Refresh, contentDescription = null)
-                    Text(" Сброс")
+                    Text(" "+stringResource(R.string.reset))
                 }
             }
             // Status message с анимацией
             AnimatedVisibility(visible = status.isNotBlank(), enter = fadeIn(), exit = fadeOut()) {
-                Text(status, fontSize = 16.sp, color = if (isGameOver) Color(0xFF388E3C) else Color.Red, modifier = Modifier.padding(8.dp))
+                Text(status, fontSize = dimensionResource(R.dimen.status_text_size).value.sp, color = if (isGameOver) Color(0xFF388E3C) else Color.Red, modifier = Modifier.padding(8.dp))
             }
             // Hint & Check buttons
             Row(
@@ -151,17 +160,17 @@ fun SudokuScreen(viewModel: SudokuViewModel = viewModel()) {
                 AnimatedButton(
                     onClick = { viewModel.useHint() },
                     colors = ButtonDefaults.buttonColors(containerColor = Color(0xFFFFD600)),
-                    modifier = Modifier.padding(horizontal = 4.dp)
+                    modifier = Modifier.padding(horizontal = dimensionResource(R.dimen.button_margin))
                 ) {
                     Icon(Icons.Default.Lightbulb, contentDescription = null, tint = Color.Black)
-                    Text(" Подсказка ($hintsRemaining)", color = Color.Black)
+                    Text(" "+stringResource(R.string.hint)+" ($hintsRemaining)", color = Color.Black)
                 }
                 AnimatedButton(
                     onClick = { viewModel.checkSolution() },
                     colors = ButtonDefaults.buttonColors(containerColor = Color(0xFF1976D2)),
-                    modifier = Modifier.padding(horizontal = 4.dp)
+                    modifier = Modifier.padding(horizontal = dimensionResource(R.dimen.button_margin))
                 ) {
-                    Text("Проверить", color = Color.White)
+                    Text(stringResource(R.string.check), color = Color.White)
                 }
             }
             // Undo
@@ -169,8 +178,8 @@ fun SudokuScreen(viewModel: SudokuViewModel = viewModel()) {
                 onClick = { viewModel.undo() },
                 enabled = !isGameOver,
                 colors = ButtonDefaults.buttonColors(containerColor = Color(0xFF90CAF9)),
-                modifier = Modifier.padding(bottom = 8.dp)
-            ) { Text("Отмена хода") }
+                modifier = Modifier.padding(bottom = dimensionResource(R.dimen.button_margin))
+            ) { Text(stringResource(R.string.undo)) }
             // Sudoku Board
             Box(
                 modifier = Modifier
@@ -198,9 +207,9 @@ fun SudokuScreen(viewModel: SudokuViewModel = viewModel()) {
             }
             // Instructions
             Column(modifier = Modifier.padding(8.dp)) {
-                Text("🎯 Выберите клетку и введите число от 1 до 9", fontSize = 14.sp)
-                Text("💡 Используйте подсказки, если застряли", fontSize = 14.sp, color = Color(0xFFFFD600))
-                Text("✅ Нажмите \"Проверить\" для валидации решения", fontSize = 14.sp, color = Color(0xFF388E3C))
+                Text("🎯 "+stringResource(R.string.select_cell_instruction), fontSize = dimensionResource(R.dimen.instruction_text_size).value.sp)
+                Text("💡 "+stringResource(R.string.use_hints_instruction), fontSize = dimensionResource(R.dimen.instruction_text_size).value.sp, color = Color(0xFFFFD600))
+                Text("✅ "+stringResource(R.string.check_instruction), fontSize = dimensionResource(R.dimen.instruction_text_size).value.sp, color = Color(0xFF388E3C))
             }
         }
     }
@@ -218,10 +227,10 @@ fun SudokuScreen(viewModel: SudokuViewModel = viewModel()) {
     if (showWinDialog) {
         AlertDialog(
             onDismissRequest = { showWinDialog = false },
-            title = { Text("Победа!") },
-            text = { Text("Поздравляем! Вы решили судоку.") },
+            title = { Text(stringResource(R.string.victory)) },
+            text = { Text(stringResource(R.string.win_message)) },
             confirmButton = {
-                Button(onClick = { showWinDialog = false }) { Text("ОК") }
+                Button(onClick = { showWinDialog = false }) { Text(stringResource(R.string.confirm)) }
             }
         )
     }
@@ -229,16 +238,16 @@ fun SudokuScreen(viewModel: SudokuViewModel = viewModel()) {
     if (showResetDialog) {
         AlertDialog(
             onDismissRequest = { showResetDialog = false },
-            title = { Text("Сбросить игру?") },
-            text = { Text("Вы уверены, что хотите сбросить поле? Прогресс будет утерян.") },
+            title = { Text(stringResource(R.string.reset_confirm_title)) },
+            text = { Text(stringResource(R.string.reset_confirm_text)) },
             confirmButton = {
                 Button(onClick = {
                     viewModel.resetBoard()
                     showResetDialog = false
-                }) { Text("Да") }
+                }) { Text(stringResource(R.string.yes)) }
             },
             dismissButton = {
-                Button(onClick = { showResetDialog = false }) { Text("Нет") }
+                Button(onClick = { showResetDialog = false }) { Text(stringResource(R.string.no)) }
             }
         )
     }
