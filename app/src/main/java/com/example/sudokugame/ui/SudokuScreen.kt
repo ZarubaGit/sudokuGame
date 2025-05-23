@@ -33,6 +33,8 @@ import androidx.compose.foundation.layout.BoxWithConstraints
 import androidx.compose.foundation.layout.WindowInsets
 import androidx.compose.foundation.layout.statusBars
 import androidx.compose.foundation.layout.windowInsetsPadding
+import androidx.compose.ui.graphics.graphicsLayer
+import androidx.compose.animation.core.animateFloatAsState
 
 @Composable
 fun SudokuScreen(viewModel: SudokuViewModel = viewModel()) {
@@ -80,7 +82,7 @@ fun SudokuScreen(viewModel: SudokuViewModel = viewModel()) {
                 Text(time.formatAsTime(), modifier = Modifier.padding(start = 4.dp, end = 16.dp))
                 Icon(Icons.Default.Lightbulb, contentDescription = null, tint = Color(0xFFFFD600))
                 Text("$hintsRemaining подсказок", modifier = Modifier.padding(start = 4.dp, end = 16.dp))
-                Button(
+                AnimatedButton(
                     onClick = { showDifficultyDialog = true },
                     colors = ButtonDefaults.buttonColors(containerColor = Color(0xFF90CAF9)),
                     contentPadding = PaddingValues(horizontal = 12.dp, vertical = 2.dp)
@@ -94,7 +96,7 @@ fun SudokuScreen(viewModel: SudokuViewModel = viewModel()) {
                 modifier = Modifier.fillMaxWidth().padding(vertical = 8.dp)
             ) {
                 Difficulty.values().forEach { diff ->
-                    Button(
+                    AnimatedButton(
                         onClick = {
                             selectedDifficulty = diff
                             viewModel.startNewGame(diff)
@@ -113,7 +115,7 @@ fun SudokuScreen(viewModel: SudokuViewModel = viewModel()) {
                 horizontalArrangement = Arrangement.Center,
                 modifier = Modifier.fillMaxWidth().padding(vertical = 8.dp)
             ) {
-                Button(
+                AnimatedButton(
                     onClick = { viewModel.startNewGame(selectedDifficulty) },
                     colors = ButtonDefaults.buttonColors(containerColor = Color(0xFFB39DDB)),
                     modifier = Modifier.padding(horizontal = 4.dp)
@@ -121,14 +123,14 @@ fun SudokuScreen(viewModel: SudokuViewModel = viewModel()) {
                     Icon(Icons.Default.RestartAlt, contentDescription = null)
                     Text(" Новая игра")
                 }
-                Button(
+                AnimatedButton(
                     onClick = { viewModel.startTimer() },
                     colors = ButtonDefaults.buttonColors(containerColor = Color(0xFF4CAF50)),
                     modifier = Modifier.padding(horizontal = 4.dp)
                 ) {
                     Text("Старт")
                 }
-                Button(
+                AnimatedButton(
                     onClick = { viewModel.resetBoard() },
                     colors = ButtonDefaults.buttonColors(containerColor = Color.Gray),
                     modifier = Modifier.padding(horizontal = 4.dp)
@@ -146,7 +148,7 @@ fun SudokuScreen(viewModel: SudokuViewModel = viewModel()) {
                 horizontalArrangement = Arrangement.Center,
                 modifier = Modifier.fillMaxWidth().padding(vertical = 8.dp)
             ) {
-                Button(
+                AnimatedButton(
                     onClick = { viewModel.useHint() },
                     colors = ButtonDefaults.buttonColors(containerColor = Color(0xFFFFD600)),
                     modifier = Modifier.padding(horizontal = 4.dp)
@@ -154,7 +156,7 @@ fun SudokuScreen(viewModel: SudokuViewModel = viewModel()) {
                     Icon(Icons.Default.Lightbulb, contentDescription = null, tint = Color.Black)
                     Text(" Подсказка ($hintsRemaining)", color = Color.Black)
                 }
-                Button(
+                AnimatedButton(
                     onClick = { viewModel.checkSolution() },
                     colors = ButtonDefaults.buttonColors(containerColor = Color(0xFF1976D2)),
                     modifier = Modifier.padding(horizontal = 4.dp)
@@ -163,7 +165,7 @@ fun SudokuScreen(viewModel: SudokuViewModel = viewModel()) {
                 }
             }
             // Undo
-            Button(
+            AnimatedButton(
                 onClick = { viewModel.undo() },
                 enabled = !isGameOver,
                 colors = ButtonDefaults.buttonColors(containerColor = Color(0xFF90CAF9)),
@@ -300,4 +302,34 @@ private fun loadProgress(context: Context): ProgressData? {
     return ProgressData(board, time, hints, difficulty)
 }
 
-data class ProgressData(val board: SudokuBoard, val time: Long, val hints: Int, val difficulty: Difficulty) 
+data class ProgressData(val board: SudokuBoard, val time: Long, val hints: Int, val difficulty: Difficulty)
+
+@Composable
+fun AnimatedButton(
+    onClick: () -> Unit,
+    modifier: Modifier = Modifier,
+    enabled: Boolean = true,
+    colors: ButtonColors = ButtonDefaults.buttonColors(),
+    contentPadding: PaddingValues = ButtonDefaults.ContentPadding,
+    content: @Composable RowScope.() -> Unit
+) {
+    var pressed by remember { mutableStateOf(false) }
+    val scale by animateFloatAsState(if (pressed) 1.08f else 1f)
+    LaunchedEffect(pressed) {
+        if (pressed) {
+            kotlinx.coroutines.delay(100)
+            pressed = false
+        }
+    }
+    Button(
+        onClick = {
+            pressed = true
+            onClick()
+        },
+        modifier = modifier.graphicsLayer { scaleX = scale; scaleY = scale },
+        enabled = enabled,
+        colors = colors,
+        contentPadding = contentPadding,
+        content = content
+    )
+} 
