@@ -30,6 +30,9 @@ import androidx.compose.runtime.rememberCoroutineScope
 import kotlinx.coroutines.launch
 import com.example.sudokugame.model.SudokuBoard
 import androidx.compose.foundation.layout.BoxWithConstraints
+import androidx.compose.foundation.layout.WindowInsets
+import androidx.compose.foundation.layout.statusBars
+import androidx.compose.foundation.layout.windowInsetsPadding
 
 @Composable
 fun SudokuScreen(viewModel: SudokuViewModel = viewModel()) {
@@ -56,7 +59,8 @@ fun SudokuScreen(viewModel: SudokuViewModel = viewModel()) {
     BoxWithConstraints(
         modifier = Modifier
             .fillMaxSize()
-            .background(Color(0xFFEAF0FB)),
+            .background(Color(0xFFEAF0FB))
+            .windowInsetsPadding(WindowInsets.statusBars),
         contentAlignment = Alignment.Center
     ) {
         val minSide = minOf(maxWidth, maxHeight)
